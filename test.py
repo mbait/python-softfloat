@@ -23,7 +23,7 @@ def testCreateFromBinarySingle():
 
 
 def testCreateFromBinaryDouble():
-    assertEqualStr(Float().from_double_bits(4609434218613702656), '1.5')
+    assertEqualStr(Float().from_double_bits(4609434218613702656L), '1.5')
 
 
 def testCreateFromInt():
@@ -32,7 +32,7 @@ def testCreateFromInt():
 
 def testConvertToDouble():
     a = Float().from_string('1.5')
-    assertEquals(a.to_double_bits(), 4609434218613702656)
+    assertEquals(a.to_double_bits(), 4609434218613702656L)
 
 
 def testConvertToStringWithRounding():
@@ -115,11 +115,11 @@ if __name__ == '__main__':
             counts[0] += 1
         except Exception as e:
             if isinstance(e, AssertionError):
-                result = 'FAIL # {}'.format(e)
+                result = 'FAIL # %s' % e
                 counts[1] += 1
 
             else:
-                result = 'ERR # {}'.format(e)
+                result = 'ERR # %s' % e
                 counts[2] += 1
 
         msg = '%-*s %s' % (name_width, t, result)
