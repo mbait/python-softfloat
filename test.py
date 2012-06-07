@@ -103,21 +103,34 @@ def testPowerInteger():
 
 if __name__ == '__main__':
     tests = filter(lambda name: name.startswith('test'), dir())
-    width = max(map(len, tests))
-    loc = locals()
+    name_width = max(map(len, tests))
+    width = 0
+
+    counts = [0, 0, 0]
 
     for t in tests:
         result = 'OK'
 
         try:
-            loc[t]()
+            apply(locals()[t])
+            counts[0] += 1
         except Exception as e:
             if isinstance(e, AssertionError):
                 result = 'FAIL\n{}'.format(e)
+                counts[1] += 1
+
             else:
                 result = 'ERR # {}'.format(e)
+                counts[2] += 1
 
-        print '%-*s  %s' % (width, t, result)
+        msg = '%-*s  %s' % (name_width, t, result)
+        width = max(width, len(msg))
+        print msg
+
+    #apply(print_stat, 
+    #stat = zip(['SUCCESSFUL', 'FAILED', 'ERRORS'], counts)
+    #print ''.ljust(width, '-')
+    #print ', '.join(map(lambda x: x[0] + ': ' + str(x[1]), stat))
 
 # vim: set sw=4 :
 # vim: set ts=4 : 
