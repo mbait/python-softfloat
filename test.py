@@ -5,13 +5,13 @@ from softfloat import Float
 
 def assertEquals(given, expected):
     if given != expected:
-        msg = '\ngot: {}, expected: {}\n'.format(repr(given), repr(expected))
+        msg = "got: '{}', expected: '{}'".format(repr(given), repr(expected))
         raise AssertionError(msg)
 
 
 def assertEqualStr(given, expected):
     if str(given) != expected:
-        raise AssertionError('\ngot: {}, expected: {}\n'.format(given, expected))
+        raise AssertionError("got: '{}', expected: '{}'".format(given, expected))
 
 
 def testCreateFromString():
@@ -31,7 +31,8 @@ def testCreateFromInt():
 
 
 def testConvertToDouble():
-    assertEquals(Float().from_string('1.5').to_double_bits(), 4609434218613702656)
+    a = Float().from_string('1.5')
+    assertEquals(a.to_double_bits(), 4609434218613702656)
 
 
 def testConvertToStringWithRounding():
@@ -43,62 +44,60 @@ def testAddFloat():
     a.from_string('1.5')
     b = Float()
     b.from_string('-0.6')
-    a.fadd(b)
+    a.addf(b)
     assertEquals(a, Float().from_string('0.9'))
 
 
 def testAddInteger():
     a = Float().from_string('1.5')
-    a.add(5)
-    assertEqualStr(a, '5.5')
+    a.addi(5)
+    assertEquals(a, Float().from_string('5.5'))
 
 
 def testSubtractFloat():
     a = Float().from_string('1.5')
     b = Float().from_string('-0.6')
-    a.fsub(b)
+    a.subf(b)
     assertEqualStr(a, '2.1')
 
 
 def testSubtractInteger():
     a = Float().from_string('1.5')
-    a.sub(2)
+    a.subi(2)
     assertEqualStr(a, '-0.5')
 
 
 def testMultiplyFloat():
     a = Float().from_string('1.5')
     b = Float().from_string('-0.6')
-    a.fmul(b)
+    assertEquals(a.mulf(b), Float().from_string('-6.30'))
 
 def testMultiplyInteger():
     a = Float().from_string('1.5')
-    b = Float().from_string('-0.6')
-    a.mul(3)
+    assertEquals(a.muli(3), Float().from_string('4.5'))
 
 
 def testDivideFloat():
     a = Float().from_string('1.5')
     b = Float().from_string('-0.6')
-    a.fdiv(b)
+    assertEquals(a.divf(b), Float().from_string('-2.5'))
 
 
 def testDivideInteger():
     a = Float().from_string('1.5')
-    b = Float().from_string('-0.6')
-    a.div(2)
+    b = Float().from_string('6')
+    assertEquals(a.divi(b), Float().from_string('0.25'))
 
 
 def testPowerFloat():
-    a = Float().from_string('1.5')
-    b = Float().from_string('-0.6')
-    a.fpow(b)
+    a = Float().from_string('1.21')
+    b = Float().from_string('-0.5')
+    assertEquals(a.powf(b), Float().from_string('0.909090909090909'))
 
 
 def testPowerInteger():
     a = Float().from_string('1.5')
-    b = Float().from_string('-0.6')
-    a.pow(10)
+    assertEquals(a.powi(2), Float().from_string('-2.25'))
 
 
 if __name__ == '__main__':
@@ -116,7 +115,7 @@ if __name__ == '__main__':
             counts[0] += 1
         except Exception as e:
             if isinstance(e, AssertionError):
-                result = 'FAIL\n{}'.format(e)
+                result = 'FAIL # {}'.format(e)
                 counts[1] += 1
 
             else:
@@ -126,11 +125,6 @@ if __name__ == '__main__':
         msg = '%-*s  %s' % (name_width, t, result)
         width = max(width, len(msg))
         print msg
-
-    #apply(print_stat, 
-    #stat = zip(['SUCCESSFUL', 'FAILED', 'ERRORS'], counts)
-    #print ''.ljust(width, '-')
-    #print ', '.join(map(lambda x: x[0] + ': ' + str(x[1]), stat))
 
 # vim: set sw=4 :
 # vim: set ts=4 : 
