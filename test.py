@@ -122,9 +122,12 @@ if __name__ == '__main__':
                 result = 'ERR # {}'.format(e)
                 counts[2] += 1
 
-        msg = '%-*s  %s' % (name_width, t, result)
+        msg = '%-*s %s' % (name_width, t, result)
         width = max(width, len(msg))
         print msg
+
+    print ''.ljust(width, '-')
+    print 'SUCCESSFUL: %d, FAILED: %d, ERRORS: %d' % tuple(counts)
 
 # vim: set sw=4 :
 # vim: set ts=4 : 
