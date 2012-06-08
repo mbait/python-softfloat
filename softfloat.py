@@ -4,6 +4,8 @@ class Float:
     TODO: find out the byte order of the target platform
 
     """
+    BITS_LEN = 64
+
     def __init__(self):
         self._s = 0
         self._a = 0
@@ -19,13 +21,54 @@ class Float:
         return ''
 
     def __repr__(self):
-        return str(long((-1 ** self._s) << 63 & (self._a) << 11 & self._q))
+        return str(long((-1 ** self._s) << 63 | (self._a) << 11 | self._q))
+
+    def _count_zeros(self, sig):
+        p = 1
+
+        while p <= self.BITS_LEN:
+            if sig & 1 << (self.BITS_LEN - p):
+                break
+            else:
+                p += 1
+
+        return p - 1
+
+
+    def _normalize(self, sig):
+        shift = self._count_zeros(sig) - 11
+        return sig << shift, 1 - shift
 
     def to_s(self, p):
-        return str(self._rep)
+        return str(self)
 
     def from_string(self, s):
-        self.from_float_bits(hex(float(s).hex()))
+        i = 0
+        j = -1
+        n = len(s)
+        sig = ''
+
+        if s[0] == '+' or s[0] == '-':
+            i = 1
+
+        while i < n:
+            if s[i] == '.':
+                if j == -1:
+                    j = i + 1
+                else:
+                    raise ValueError('Invalid froating-point string')
+            else:
+                sig += s[i]
+
+            i += 1
+
+        if s[0] == '-':
+            self._s = 1
+        else:
+            self._s = 0
+
+        self._q, self._a = self._normalize(long(sig))
+        
         return self
 
     def from_int(self, num):
@@ -42,7 +85,7 @@ class Float:
         return self
 
     def to_double_bits(self):
-        return long(self._s << 31 & self._a << 11 & self._q)
+        return long(self._s << 31 | self._a << 11 | self._q)
 
     def addf(self, obj):
         return self
@@ -73,3 +116,7 @@ class Float:
 
     def powf(self, num):
         return self
+
+# vim: set sw=4 :
+# vim: set ts=4 :
+# vim: set expandtab :
