@@ -15,6 +15,7 @@ def assertEqualStr(given, expected):
 
 
 def testCreateFromString():
+    assertEqualStr(Float().from_string('42'), '42')
     assertEqualStr(Float().from_string('1.5234'), '1.5234')
 
 

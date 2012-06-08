@@ -1,15 +1,10 @@
 class Float:
-    """Byte order for x86 is little. Assume it during development.
-
-    TODO: find out the byte order of the target platform
-
-    """
     BITS_LEN = 64
 
     def __init__(self):
-        self._s = 0
-        self._a = 0
-        self._q = 0
+        self._s = 0L
+        self._a = 0L
+        self._q = 0L
 
     def __eq__(self, obj):
         return self._s == obj._s and self._a == obj._a and self._q == obj._q
@@ -21,7 +16,8 @@ class Float:
         return ''
 
     def __repr__(self):
-        return str(long((-1 ** self._s) << 63 | (self._a) << 11 | self._q))
+        int64 = long((-1 ** self._s) << 63 | (self._q) << 52 | self._a)
+        return str(int64 & 0xffffffffffffffff)
 
     def _count_zeros(self, sig):
         p = 1
@@ -37,38 +33,29 @@ class Float:
 
     def _normalize(self, sig):
         shift = self._count_zeros(sig) - 11
-        return sig << shift, 1 - shift
+        return 1 - shift, sig << shift
 
     def to_s(self, p):
         return str(self)
 
     def from_string(self, s):
-        i = 0
-        j = -1
         n = len(s)
-        sig = ''
+        i = 0
 
-        if s[0] == '+' or s[0] == '-':
-            i = 1
-
-        while i < n:
-            if s[i] == '.':
-                if j == -1:
-                    j = i + 1
-                else:
-                    raise ValueError('Invalid froating-point string')
-            else:
-                sig += s[i]
-
+        while i < n and s[i] != '.':
             i += 1
 
-        if s[0] == '-':
-            self._s = 1
-        else:
-            self._s = 0
+        sig = long(s[:i] + s[i + 1:])
+        sign = 0
 
-        self._q, self._a = self._normalize(long(sig))
-        
+        if sig < 0:
+            sign = 1
+            sig = -sig
+
+        e = 0
+
+        while 
+
         return self
 
     def from_int(self, num):
@@ -199,7 +186,7 @@ class Float:
         a = a1 * a2
 
         if 0 <= a:
-            s << =1
+            s <<=1
             q -= 1
 
         self._round_and_pack(s, q, a)
