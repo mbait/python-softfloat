@@ -5,13 +5,13 @@ from softfloat import Float
 
 def assertEquals(given, expected):
     if given != expected:
-        msg = "got: '{}', expected: '{}'".format(repr(given), repr(expected))
+        msg = "got: '%s', expected: '%s'" % (repr(given), repr(expected))
         raise AssertionError(msg)
 
 
 def assertEqualStr(given, expected):
     if str(given) != expected:
-        raise AssertionError("got: '{}', expected: '{}'".format(given, expected))
+        raise AssertionError("got: '%s', expected: '%s'" % (given, expected))
 
 
 def testCreateFromString():
@@ -102,7 +102,7 @@ def testPowerInteger():
 
 if __name__ == '__main__':
     tests = filter(lambda name: name.startswith('test'), dir())
-    name_width = max(map(len, tests))
+    test_width = max(map(len, tests))
     width = 0
 
     counts = [0, 0, 0]
@@ -119,10 +119,10 @@ if __name__ == '__main__':
                 counts[1] += 1
 
             else:
-                result = 'ERR # %s' % e
+                result = 'ERR  # %s' % e
                 counts[2] += 1
 
-        msg = '%-*s %s' % (name_width, t, result)
+        msg = '%s%s' % (t[4:].ljust(test_width + 4, '.'), result)
         width = max(width, len(msg))
         print msg
 
