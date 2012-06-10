@@ -17,7 +17,7 @@ class Float:
 
     def __repr__(self):
         int64 = long((-1 ** self._s) << 63 | (self._q) << 52 | self._a)
-        return str(int64 & 0xffffffffffffffff)
+        return str(int64 & 0xffffffffffffffffL)
 
     def _count_zeros(self, sig):
         p = 1
@@ -26,7 +26,7 @@ class Float:
             if sig & 1 << (self.BITS_LEN - p):
                 break
             else:
-                p += 1
+                p = p + 1
 
         return p - 1
 
@@ -43,7 +43,7 @@ class Float:
         i = 0
 
         while i < n and s[i] != '.':
-            i += 1
+            i = i + 1
 
         sig = long(s[:i] + s[i + 1:])
         sign = 0
@@ -53,8 +53,6 @@ class Float:
             sig = -sig
 
         e = 0
-
-        while 
 
         return self
 
@@ -66,8 +64,8 @@ class Float:
 
     def from_double_bits(self, bits):
         self._s = bits >> 31
-        self._a = bits << 1 >> 12
-        self._q = bits << 53 >> 53;
+        self._q = bits << 53 & 0x7ff
+        self._a = bits & 0x7ff
 
         return self
 
@@ -181,13 +179,13 @@ class Float:
             pass
 
         q = self._q + other._q - 0x3ff
-        a1 = (self._a | 0x0010000000000000) << 10
-        a2 = (other._a | 0x0010000000000000) << 10
+        a1 = (self._a | 0x0010000000000000L) << 10
+        a2 = (other._a | 0x0010000000000000L) << 10
         a = a1 * a2
 
         if 0 <= a:
-            s <<=1
-            q -= 1
+            s = s << 1
+            q = q - 1
 
         self._round_and_pack(s, q, a)
 
