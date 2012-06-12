@@ -16,7 +16,7 @@ class Float:
         return ''
 
     def __repr__(self):
-        int64 = long((-1 ** self._s) << 63 | (self._q) << 52 | self._a)
+        int64 = (self._s << 63) | (self._e << 52) | self._a
         return str(int64 & 0xffffffffffffffffL)
 
     def _count_zeros(self, sig):
@@ -60,12 +60,16 @@ class Float:
         return self
 
     def from_float_bits(self, bits):
+        self._s = bits >> 31
+        self._q = bits >> 23 & 0xff
+        self._a = bits & 0x007FFFFFL
+
         return self
 
     def from_double_bits(self, bits):
-        self._s = bits >> 31
-        self._q = bits << 53 & 0x7ff
-        self._a = bits & 0x7ff
+        self._s = bits >> 63
+        self._q = bits >> 52 & 0x7ff
+        self._a = bits & 0x000FFFFFFFFFFFFFL
 
         return self
 
