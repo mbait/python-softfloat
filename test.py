@@ -1,14 +1,26 @@
 #!/usr/bin/env python
 
+import sys
 from softfloat import Float
 
 
-def fill_dash(width):
+def _fill_dash(width):
     return reduce(lambda x, y: x + y, map(lambda x: '-', range(width)))
 
 
-def fill_dot(width):
+def _fill_dot(width):
     return reduce(lambda x, y: x + y, map(lambda x: '.', range(width)))
+
+
+def _filter_tests(name):
+    if len(sys.argv) - 1 == 0:
+        return 1
+
+    for pat in sys.argv[1:]:
+        if name[4:len(pat) + 4] == pat:
+            return 1
+    
+    return 0
 
 
 def assertEquals(given, expected):
@@ -23,7 +35,7 @@ def assertEqualStr(given, expected):
 
 
 def testCreateFromString():
-    assertEqualStr(Float().from_string('42'), '42')
+    assertEqualStr(Float().from_string('0.42'), '0.42')
     assertEqualStr(Float().from_string('1.5234'), '1.5234')
 
 
@@ -112,6 +124,12 @@ def testPowerInteger():
 
 if __name__ == '__main__':
     tests = filter(lambda name: name[:4] == 'test', dir())
+    tests = filter(_filter_tests, tests)
+
+    if not tests:
+        print 'no tests'
+        sys.exit(-1)
+
     test_width = max(map(len, tests))
     width = 0
 
@@ -132,12 +150,12 @@ if __name__ == '__main__':
                 result = 'ERR  # %s' % e
                 counts[2] = counts[2] + 1
 
-        msg = t[4:] + fill_dot(test_width - len(t) + 4) + result
+        msg = t[4:] + _fill_dot(test_width - len(t) + 4) + result
         width = max(width, len(msg))
         print msg
 
     stat = 'SUCCESSFUL: %d, FAILED: %d, ERRORS: %d' % tuple(counts)
-    print fill_dash(max(len(stat), width))
+    print _fill_dash(max(len(stat), width))
     print stat
 
 # vim: set sw=4 :

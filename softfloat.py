@@ -13,11 +13,14 @@ class Float:
         return self._s != obj._s or self._a != obj._a or self._q != obj._q
 
     def __str__(self):
-        return ''
+        import struct
+        struct.unpack('!f', hex(1))
 
     def __repr__(self):
-        int64 = (self._s << 63) | (self._e << 52) | self._a
-        return str(int64 & 0xffffffffffffffffL)
+        return str(self._pack())
+
+    def _pack(self):
+        return ((self._s << 63) | (self._q << 52) | self._a) & 0xffffffffffffffffL
 
     def _count_zeros(self, sig):
         p = 1
@@ -39,20 +42,25 @@ class Float:
         return str(self)
 
     def from_string(self, s):
-        n = len(s)
+        intg = ''
         i = 0
 
-        while i < n and s[i] != '.':
+        while i < len(s) and s[i] != '.':
+            intg = intg + s[i]
             i = i + 1
 
-        sig = long(s[:i] + s[i + 1:])
-        sign = 0
+        frac = s[i + 1:]
+        norm = pow(10, len(frac))
+        dec = long(intg + frac)
+        self._q = 0
 
-        if sig < 0:
-            sign = 1
-            sig = -sig
+        while dec < norm:
+            dec = dec << 1
+            self._q = self._q - 1
 
-        e = 0
+        self._a = dec - norm
+
+        print self._a
 
         return self
 
@@ -186,12 +194,13 @@ class Float:
         a1 = (self._a | 0x0010000000000000L) << 10
         a2 = (other._a | 0x0010000000000000L) << 10
         a = a1 * a2
+        s = self._s
 
         if 0 <= a:
             s = s << 1
             q = q - 1
 
-        self._round_and_pack(s, q, a)
+        #self._round_and_pack(s, q, a)
 
         return self
 
